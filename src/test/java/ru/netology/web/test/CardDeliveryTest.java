@@ -1,5 +1,6 @@
 package ru.netology.web.test;
 
+import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
 import ru.netology.web.data.DataGenerator;
@@ -14,36 +15,37 @@ import static java.time.Duration.ofSeconds;
 
 public class CardDeliveryTest {
 
+
+
+
     @Test
     void shouldFillingApplication() {
         open("http://localhost:9999");
+        val validUser = DataGenerator.FillingForm.generateCustomerData("ru");
+        val firstMeet = DataGenerator.FillingForm.generateRandomNumber(4, 7);
+        val meeting1 = DataGenerator.FillingForm.generateMeetingDay(firstMeet);
+        val secondMeet = DataGenerator.FillingForm.generateRandomNumber(firstMeet + 5, firstMeet + 14);
+        val meeting2 = DataGenerator.FillingForm.generateMeetingDay(secondMeet);
 
-        int firstMeet = DataGenerator.FillingForm.generateRandomNumber(4, 7);
-        int secondMeet = DataGenerator.FillingForm.generateRandomNumber(firstMeet + 5, firstMeet + 14);
+        $("[data-test-id='city'] input").setValue(validUser.getCity());
 
-        $("[data-test-id='city'] input").setValue(DataGenerator.FillingForm.generateCustomerData("ru")
-                .getCity());
         $("[placeholder='Дата встречи']").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[placeholder='Дата встречи']").setValue(DataGenerator.FillingForm.generateMeetingDay(firstMeet));
-        $("[data-test-id='name'] input").setValue(DataGenerator.FillingForm.generateCustomerData("ru")
-                .getName());
-        $("[data-test-id='phone'] input").setValue(DataGenerator.FillingForm.generateCustomerData("ru")
-                .getPhone());
+        $("[placeholder='Дата встречи']").setValue(meeting1);
+        $("[data-test-id='name'] input").setValue(validUser.getName());
+        $("[data-test-id='phone'] input").setValue(validUser.getPhone());
         $("[data-test-id=agreement] .checkbox__box").click();
         $(withText("Запланировать")).click();
         $("[data-test-id='success-notification']").shouldBe(visible, ofSeconds(15));
         $("[data-test-id='success-notification']>.notification__content")
-                .shouldHave(text("Встреча успешно запланирована на " + DataGenerator.FillingForm.generateMeetingDay
-                        (firstMeet)));
+                .shouldHave(text("Встреча успешно запланирована на " + (meeting1)));
         $("[placeholder='Дата встречи']").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[placeholder='Дата встречи']").setValue(DataGenerator.FillingForm.generateMeetingDay(secondMeet));
+        $("[placeholder='Дата встречи']").setValue(meeting2);
         $(withText("Запланировать")).click();
         $("[data-test-id='replan-notification']").shouldBe(visible);
         $("[data-test-id='replan-notification']>.notification__content").
                 shouldHave(text("У вас уже запланирована встреча на другую дату. Перепланировать?"));
         $(withText("Перепланировать")).click();
         $("[data-test-id='success-notification']>.notification__content").shouldBe(visible)
-                .shouldHave(exactText("Встреча успешно запланирована на " + DataGenerator.FillingForm
-                        .generateMeetingDay(secondMeet)), Duration.ofSeconds(15));
+                .shouldHave(exactText("Встреча успешно запланирована на " + (meeting2)), Duration.ofSeconds(15));
     }
 }

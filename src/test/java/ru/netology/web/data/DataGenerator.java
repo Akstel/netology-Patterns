@@ -1,17 +1,11 @@
 package ru.netology.web.data;
 
 import com.github.javafaker.Faker;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Value;
-
 import java.time.LocalDate;
 import java.util.Locale;
-
 import static java.time.format.DateTimeFormatter.ofPattern;
 
-@Data
-@AllArgsConstructor
 public class DataGenerator {
 
     public static class FillingForm {
@@ -29,8 +23,8 @@ public class DataGenerator {
         }
 
         public static String generateMeetingDay(int days) {
-            String meetingDay = LocalDate.now().plusDays(days).format(ofPattern("dd.MM.yyyy"));
-            return meetingDay;
+            return LocalDate.now().plusDays(days).format(ofPattern("dd.MM.yyyy"));
+
         }
 
         private static String generateCityFromDropList() {
